@@ -1,0 +1,85 @@
+version: "3.8"
+
+services:
+  # 🐇 RabbitMQ service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # cổng dùng cho app giao tiếp
+      - "15672:15672" # giao diện web quản lý RabbitMQ
+    networks:
+      - micro_network
+
+  # 🍃 MongoDB service
+  mymongodb:
+    image: mongo:7.0
+    container_name: mymongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - micro_network
+
+  # 🚪 API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3003:3003"
+    depends_on:
+      - auth
+      - order
+      - product
+    networks:
+      - micro_network
+
+  # 👤 Auth Service
+  auth:
+    build: ./auth
+    environment:
+      - MONGODB_AUTH_URI=mongodb://mymongodb:27017/authDB
+      - JWT_SECRET=super_secret_auth_key
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mymongodb
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    networks:
+      - micro_network
+
+  # 📦 Product Service
+  product:
+    build: ./product
+    environment:
+      - MONGODB_PRODUCT_URI=mongodb://mymongodb:27017/productDB
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mymongodb
+      - rabbitmq
+    ports:
+      - "3001:3001"
+    networks:
+      - micro_network
+
+  # 🧾 Order Service
+  order:
+    build: ./order
+    environment:
+      - MONGODB_ORDER_URI=mongodb://mymongodb:27017/orderDB
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mymongodb
+      - rabbitmq
+    ports:
+      - "3002:3002"
+    networks:
+      - micro_network
+
+volumes:
+  mongo_data:
+
+networks:
+  micro_network:
+    driver: bridge
