@@ -109,19 +109,19 @@ class ProductController {
       res.status(500).json({ message: "Server error" });
     }
   }
+  
   async getProductById(req, res) {
     try {
       
-      const products = await Product.findById(req.params.id);
-      if (!products) {
-        res.status(404).json({ message: "not found" });
-      }
+      const products = await Product.find(req.params.id);
+
       res.status(200).json(products);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error" });
     }
   }
+
 }
 
 module.exports = ProductController;
