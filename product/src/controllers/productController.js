@@ -109,7 +109,8 @@ class ProductController {
       res.status(500).json({ message: "Server error" });
     }
   }
-  
+
+
   async getProductById(req, res) {
     try {
       
@@ -121,6 +122,7 @@ class ProductController {
       res.status(500).json({ message: "Server error" });
     }
   }
+
 
 }
 
