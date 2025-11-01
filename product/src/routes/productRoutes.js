@@ -11,7 +11,7 @@ router.get("/", isAuthenticated, productController.getProducts);
 
 
 
-router.get("/:id", productController.getProducts);
+router.get("/:id", productController.getProductById);
 
 
 
