@@ -110,8 +110,7 @@ class ProductController {
     }
   }
 
-
-async getProductById(req, res, next) {
+async getProductById(req, res) {
     try {
       
       const products = await Product.findById(req.params.id);
